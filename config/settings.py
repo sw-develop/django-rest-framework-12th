@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 import json
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 #BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -39,8 +40,20 @@ with open(os.path.join(BASE_DIR, 'secrets.json'), 'rb') as secret_file:
 #        error_msg = "Set the {} environment variable".format(setting)
 #        raise ImproperlyConfigured(error_msg)
 
+secret_file = os.path.join(BASE_DIR, 'secrets.json')
 
-SECRET_KEY = "@n(vxl4)6dk#0ur98z7a=6-l@w4j&tg*w22x^8$qkskf1oqo-w"
+with open(secret_file) as f:
+    secrets = json.loads(f.read())
+
+def get_secret(setting, secrets=secrets):
+    try:
+        print("check: ", secrets[setting])
+        return secrets[setting]
+    except KeyError:
+        error_msg = "Set the {} environment variable".format(setting)
+        raise ImproperlyConfigured
+
+SECRET_KEY = get_secret("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
