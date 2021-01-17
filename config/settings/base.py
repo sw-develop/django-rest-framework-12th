@@ -40,20 +40,10 @@ with open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 #        error_msg = "Set the {} environment variable".format(setting)
 #        raise ImproperlyConfigured(error_msg)
 
-secret_file = os.path.join(BASE_DIR, 'secrets.json')
+with open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'secrets.json'), 'rb') as secret_file:
+    secrets = json.load(secret_file)
 
-with open(secret_file) as f:
-    secrets = json.loads(f.read())
-
-def get_secret(setting, secrets=secrets):
-    try:
-        print("check: ", secrets[setting])
-        return secrets[setting]
-    except KeyError:
-        error_msg = "Set the {} environment variable".format(setting)
-        raise ImproperlyConfigured
-
-SECRET_KEY = get_secret("SECRET_KEY")
+SECRET_KEY = secrets['SECRET_KEY']
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
